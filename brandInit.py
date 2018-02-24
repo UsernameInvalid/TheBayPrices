@@ -3,18 +3,11 @@ import requests
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 from db import connect
-
+from bs import soupify
 
 def all_brand_insert():
     # Request the html from the brands page
-    page = requests.get(
-        'http://www.thebay.com/webapp/wcs/stores/servlet/en/HBCBrandsListView?storeId=10701&catalogId=10652&langId=-24')
-
-    # Encodes the html into utf-8 then decodes it back to ascii
-    page_text = page.text.encode('utf-8').decode('ascii', 'ignore')
-
-    # Saves the encoded html into a Beautiful Soup object
-    soup = BeautifulSoup(page_text, 'html.parser')
+    soup = soupify('http://www.thebay.com/webapp/wcs/stores/servlet/en/HBCBrandsListView?storeId=10701&catalogId=10652&langId=-24')
 
     # Initializes a array for the all urls
     itemUrls = []
@@ -50,7 +43,9 @@ def all_brand_insert():
         cur.execute(insert, tuple(values))
 
         print("Inserting {} into table".format(itemNames[i]))
+
     # Commits all actions
     conn.commit()
+
     # Closes database connection
     conn.close()
